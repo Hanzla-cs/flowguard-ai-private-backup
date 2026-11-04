@@ -1,0 +1,80 @@
+{
+  "manifestVersion": "FG-SYNTHETIC-1",
+  "datasetId": "flowguard-paired-wait-shift-v1",
+  "statement": "Entirely fictional, intentionally constructed +10-minute paired-wait demonstration; not observed hospital deterioration.",
+  "provenance": "Independently constructed for FlowGuard AI. No patient, hospital, academic project, workbook or external dataset inputs.",
+  "generator": {
+    "version": "FG-GENERATOR-1",
+    "algorithm": "FG-LCG32-1",
+    "seed": 20261104,
+    "recurrence": "state = (1664525 * state + 1013904223) mod 2^32; output updated unsigned state",
+    "sampling": "For bound n, reject outputs >= floor(2^32/n)*n; return output mod n.",
+    "drawOrder": "A day 0..6, slot 0..99: arrival sample(864), then seen-only wait sample(116). B uses no draws."
+  },
+  "parameters": {
+    "daysPerPeriod": 7,
+    "encountersPerDay": 100,
+    "seenPerDay": 85,
+    "notSeenPerDay": 10,
+    "unknownPerDay": 5,
+    "arrivalRule": "UTC midnight + slot*864 seconds + sample(864) seconds; B = A + 7 days.",
+    "statusRule": "Slots 0..84 seen, 85..94 not_seen, 95..99 unknown.",
+    "aWaitMinutesInclusive": [
+      5,
+      120
+    ],
+    "bPairedWaitShiftMinutes": 10,
+    "pairingRule": "FG-A-NNNNNN and FG-B-NNNNNN share pair number day*100+slot+1, padded to six digits."
+  },
+  "serialization": {
+    "encoding": "UTF-8 without BOM",
+    "newline": "LF",
+    "finalNewline": true,
+    "csvHeader": "encounter_id,arrival_at_utc,first_provider_at_utc,provider_status",
+    "rowOrder": "All A then all B; ascending day then slot within each period.",
+    "timestampFormat": "YYYY-MM-DDTHH:mm:ss.SSSZ",
+    "json": "Fixed property insertion order from FG-GENERATOR-1; JSON.stringify(value, null, 2) + LF; no volatile timestamps."
+  },
+  "periods": {
+    "A": {
+      "startUtc": "2026-10-05T00:00:00Z",
+      "endUtcExclusive": "2026-10-12T00:00:00Z"
+    },
+    "B": {
+      "startUtc": "2026-10-12T00:00:00Z",
+      "endUtcExclusive": "2026-10-19T00:00:00Z"
+    }
+  },
+  "observationCutoffUtc": "2026-10-20T00:00:00Z",
+  "expectedCounts": {
+    "total": 1400,
+    "perPeriod": {
+      "countable": 700,
+      "seen": 595,
+      "notSeen": 70,
+      "unknown": 35,
+      "timingEligible": 595
+    }
+  },
+  "coverage": {
+    "kind": "declared",
+    "intervals": [
+      {
+        "startUtc": "2026-10-05T00:00:00Z",
+        "endUtcExclusive": "2026-10-19T00:00:00Z"
+      }
+    ],
+    "encounterCapture": "declared_complete",
+    "provenance": {
+      "source": "synthetic_manifest",
+      "reference": "flowguard-paired-wait-shift-v1.manifest.json"
+    },
+    "syntheticReproduction": "not_checked",
+    "independentlyVerifiedHospitalCoverage": false
+  },
+  "csv": {
+    "file": "flowguard-paired-wait-shift-v1.csv",
+    "byteLength": 89596,
+    "sha256": "5cafd9e244b8b48d729b78176449df5fce37bbbcc13ce1dd2f38bbf77602a0a2"
+  }
+}
