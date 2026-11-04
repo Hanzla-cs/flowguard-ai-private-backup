@@ -1,3 +1,5 @@
+import type { TimestampResult } from './timestamps';
+
 /**
  * FG-DATA-1 / FG-METRIC-1 contracts only: no parsing, validation or calculations.
  * A string/number type is not evidence that runtime validation has succeeded.
@@ -38,6 +40,7 @@ export type IssueCode =
   | 'missing_provider' | 'malformed_provider' | 'provider_before_arrival'
   | 'provider_after_cutoff' | 'invalid_status' | 'status_timestamp_conflict'
   | 'period_selection_required' | 'invalid_period' | 'overlapping_periods'
+  | 'period_source_mismatch' | 'invalid_observation_cutoff'
   | 'coverage_unverified';
 
 export type IssueEffect =
@@ -291,3 +294,48 @@ export interface BlockedEvidenceReport extends EvidenceReportBase {
 }
 
 export type EvidenceReport = CalculatedEvidenceReport | BlockedEvidenceReport;
+
+/** Phase 3A ingestion exposes records only after a successful full-file parse. */
+export interface CsvParsed {
+  readonly kind: 'parsed';
+  readonly source: SourceIdentity;
+  readonly records: readonly SourceRecord[];
+  readonly skippedBlank: number;
+  readonly issues: readonly [];
+}
+
+export type CsvIngestionResult = CsvParsed | {
+  readonly kind: 'fatal';
+  readonly issues: readonly ValidationIssue[];
+};
+
+export interface InspectedEncounter {
+  readonly source: SourceRecord;
+  readonly identifierValid: boolean;
+  /** Null for missing/unsupported statuses; the original string is preserved in source. */
+  readonly recordedStatus: ProviderStatus | null;
+  readonly arrival: TimestampResult;
+  readonly provider: TimestampResult;
+  readonly rejection: 'invalid_identity' | 'unusable_arrival' | null;
+  readonly quarantined: boolean;
+  /** A null reason alone does not imply eligibility: valid identity/arrival,
+   * no quarantine, a valid cutoff and period membership are also required. */
+  readonly timingExclusion: TimingExclusionReason | null;
+  readonly issues: readonly ValidationIssue[];
+}
+
+export interface EncounterValidationResult {
+  readonly kind: 'validated' | 'blocked_configuration';
+  readonly source: SourceIdentity;
+  readonly inspected: readonly InspectedEncounter[];
+  /** Identity/arrival accepted records, including out-of-period encounters.
+   * Null if an invalid observation cutoff prevents acceptance decisions. */
+  readonly accepted: readonly InspectedEncounter[] | null;
+  /** Nonquarantined identity/arrival exclusions, never provider-only defects. */
+  readonly rejected: readonly InspectedEncounter[] | null;
+  readonly cohorts: Readonly<Record<PeriodId, readonly InspectedEncounter[]>> | null;
+  readonly outsidePeriods: readonly InspectedEncounter[] | null;
+  readonly configurationIssues: readonly ValidationIssue[];
+  readonly quality: DataQualityResults;
+  readonly coverage: Pick<CoverageEvidence, 'metadata' | 'independentlyVerifiedHospitalCoverage'>;
+}
