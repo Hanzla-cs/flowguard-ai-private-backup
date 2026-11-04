@@ -1,0 +1,9 @@
+node_modules/
+.npm-cache/
+.vitest/
+coverage/
+dist/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
