@@ -143,12 +143,21 @@ export type MetricPopulation =
 
 export type MetricUnit = 'encounters' | 'minutes' | 'percent' | 'percentage_points' | 'hours';
 export type MetricId =
-  | 'encounter_count' | 'status_seen' | 'status_not_seen' | 'status_unknown'
+  | 'encounter_count' | 'timing_eligible_count' | 'timing_excluded_count' | 'status_seen' | 'status_not_seen' | 'status_unknown'
   | 'status_invalid' | 'median_door_to_provider' | 'timing_eligibility'
   | 'seen_provider_completeness' | 'seen_provider_parse_validity'
   | 'seen_timing_eligibility' | 'declared_temporal_coverage';
 
 export interface MetricContext {
+  readonly referenceId: string;
+  readonly definitionId: string;
+  readonly definition: string;
+  readonly populationRecordNumbers: readonly number[];
+  readonly numeratorRecordNumbers: readonly number[] | null;
+  readonly eligibleN: number;
+  readonly excludedN: number;
+  /** Prepared display only; never an input to another calculation. */
+  readonly displayValue: string | null;
   readonly id: MetricId;
   readonly period: PeriodId;
   readonly unit: MetricUnit;
@@ -173,9 +182,19 @@ export interface StatusCounts {
   readonly invalid: number;
 }
 
+export interface TimingObservation {
+  readonly recordNumber: number;
+  readonly durationMilliseconds: number;
+  readonly minutes: number;
+  readonly displayMinutes: string;
+}
+
 export interface OperationalMetrics {
   readonly period: ComparisonPeriod;
   readonly encounterCount: MetricResult;
+  readonly timingEligibleCount: MetricResult;
+  readonly timingExcludedCount: MetricResult;
+  readonly doorToProviderDurations: readonly TimingObservation[];
   readonly statuses: Readonly<Record<keyof StatusCounts, {
     readonly count: MetricResult;
     readonly percentage: MetricResult;
@@ -254,11 +273,16 @@ export interface CoverageEvidence {
   readonly limitations: readonly string[];
 }
 
-export type DifferenceValue =
+export type DifferenceValue = { readonly displayValue: string | null } & (
   | { readonly status: 'calculated' | 'calculated_with_limitations'; readonly value: number }
-  | { readonly status: 'unavailable'; readonly value: null; readonly reason: string };
+  | { readonly status: 'unavailable'; readonly value: null; readonly reason: string });
 
 export interface MetricComparison {
+  readonly interpretation: 'descriptive_only';
+  readonly baselineSampleSize: number;
+  readonly comparisonSampleSize: number;
+  readonly baselineDenominator: number | null;
+  readonly comparisonDenominator: number | null;
   readonly metricId: MetricId;
   readonly baselinePeriod: 'A';
   readonly comparisonPeriod: 'B';
@@ -272,6 +296,15 @@ export interface MetricComparison {
 }
 
 export interface EvidenceReportBase {
+  readonly interpretation: 'descriptive_only';
+  readonly validationSummary: {
+    readonly parsedNonblank: number;
+    readonly skippedBlank: number;
+    readonly accepted: number | null;
+    readonly rejected: number | null;
+    readonly quarantined: number;
+    readonly configurationIssues: readonly ValidationIssue[];
+  };
   readonly run: RunIdentity;
   readonly quality: DataQualityResults;
   readonly coverage: CoverageEvidence;
