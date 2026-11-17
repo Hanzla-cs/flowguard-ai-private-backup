@@ -1,4 +1,24 @@
 # FlowGuard AI
+
+Phase 4 now includes a responsive Next.js dashboard over the independently verified
+analytical engine. Load the original synthetic demo, or analyze a CSV locally in
+your browser after confirming two seven-day UTC periods. AI, operational alerts,
+what-if scenarios, report/PDF generation and deployment are not implemented.
+
+Use Node 24 and npm 11. From this directory:
+
+```powershell
+npm.cmd ci
+npm.cmd run dev
+```
+
+Open http://localhost:3000. Choose **Load Synthetic Demo**, then **Run Analysis**.
+See [Phase 4 execution report](docs/phase-4-dashboard.md) for the exact changes,
+dependency compatibility decisions, verification results, screenshots and browser
+test instructions. The original foundation record below is historical.
+
+---
+
 ## Hospital Operations Risk & Decision Support
 
 **Detect operational pressure. Explain the evidence. Support better decisions.**

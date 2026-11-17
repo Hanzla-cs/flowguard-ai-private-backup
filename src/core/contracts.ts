@@ -190,6 +190,7 @@ export interface TimingObservation {
 }
 
 export interface OperationalMetrics {
+  readonly dailyEncounters: import('./daily').DailySeries;
   readonly period: ComparisonPeriod;
   readonly encounterCount: MetricResult;
   readonly timingEligibleCount: MetricResult;

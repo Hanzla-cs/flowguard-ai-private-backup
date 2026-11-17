@@ -3,7 +3,12 @@ node_modules/
 .vitest/
 coverage/
 dist/
+.next/
+playwright-report/
+test-results/
+.playwright/
 *.tsbuildinfo
 .env
 .env.*
 !.env.example
+.vercel

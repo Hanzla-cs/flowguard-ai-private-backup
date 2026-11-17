@@ -1,0 +1,15 @@
+node_modules
+.next
+.npm-cache
+.playwright
+playwright-report
+test-results
+coverage
+dist
+.vitest
+*.tsbuildinfo
+.env
+.env.*
+.codex
+.codex/**
+.vercel

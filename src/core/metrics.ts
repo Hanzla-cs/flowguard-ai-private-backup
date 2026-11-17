@@ -3,6 +3,7 @@ import type {
   MetricId, MetricPopulation, MetricResult, MetricUnit, OperationalMetrics, TimingObservation,
 } from './contracts';
 import { formatNumber } from './format';
+import { dailyEncounters } from './daily';
 
 export interface MetricInput {
   readonly id: MetricId;
@@ -117,6 +118,7 @@ export function calculatePeriodMetrics(
   ];
   return {
     period: { ...period },
+    dailyEncounters: dailyEncounters(validation, period),
     encounterCount: count('encounter_count', population, 'Count accepted unique-ID arrival records inside the selected half-open period; not a verified hospital census.', '3'),
     timingEligibleCount: count('timing_eligible_count', quality.timingEligible.recordNumbers, 'Count timing-eligible records under the approved validation rules.', '6'),
     timingExcludedCount: count('timing_excluded_count', quality.timingExcluded.recordNumbers, 'Countable encounters minus timing-eligible encounters; one primary reason per excluded encounter.', '6'),

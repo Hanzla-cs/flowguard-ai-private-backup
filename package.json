@@ -3,23 +3,40 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Independent FlowGuard analytical contracts and fixture test foundation; no metric engine.",
+  "description": "Independent FlowGuard dashboard and verified deterministic analytical engine.",
   "engines": {
     "node": ">=24.0.0 <25"
   },
   "packageManager": "npm@11.13.0",
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "test:browser": "playwright test",
+    "typecheck": "tsc --noEmit --incremental false",
     "test": "vitest run",
     "test:smoke": "vitest run tests/foundation.test.ts",
     "check": "npm run typecheck && npm test"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@types/node": "24.19.2",
-    "typescript": "7.0.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.5",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
     "vitest": "5.1.0"
   },
+  "overrides": {
+    "minimatch@>=7 <11.0.1": "11.0.1"
+  },
   "dependencies": {
-    "csv-parse": "7.0.3"
+    "csv-parse": "7.0.3",
+    "next": "16.4.5",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
   }
 }
